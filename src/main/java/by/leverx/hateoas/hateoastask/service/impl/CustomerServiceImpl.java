@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -32,19 +33,34 @@ public class CustomerServiceImpl implements CustomerService {
     public Optional<CustomerResponseDto> getCustomerById(Long id) {
 
         Optional<Customer> customer = customerRepository.findById(id);
-        customer.get().add(linkTo(methodOn(CustomerController.class)    // TODO: 7/28/2021 doesn't work
+        customer.get().add(linkTo(methodOn(CustomerController.class)
                 .getCustomer(customer.get().getId()))
                 .withSelfRel());
+
         return customer
                 .map(customerMapper::toDto);    // TODO: 7/28/2021 exception
+
     }
 
     @Override
     public CustomerResponseDto createCustomer(CustomerRequestDto customerRequestDto) {
+
         Customer customer = customerMapper.toEntity(customerRequestDto);
         customerRepository.save(customer);
 
+        customer.add(linkTo(methodOn(CustomerController.class)
+                .createCustomer(customerRequestDto))
+                .withRel("create"));
         return getCustomerById(customer.getId()).get();
+
+    }
+
+    @Override
+    public List<CustomerResponseDto> getCustomers() {
+
+        List<Customer> customers = customerRepository.findAll();
+        return customerMapper.listToDtos(customers);
+
     }
 
 }

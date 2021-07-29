@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author Valeryia Zubrytskaya
@@ -28,6 +29,11 @@ public class CustomerController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<CustomerResponseDto> getCustomer(@PathVariable Long id) {
         return ResponseEntity.ok(customerService.getCustomerById(id).get());
+    }
+
+    @GetMapping
+    public List<CustomerResponseDto> getCustomers() {
+        return customerService.getCustomers();
     }
 
     @PostMapping
