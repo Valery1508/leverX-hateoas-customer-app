@@ -1,9 +1,9 @@
 package by.leverx.hateoas.hateoastask.service.impl;
 
-import by.leverx.hateoas.hateoastask.controller.CustomerController;
 import by.leverx.hateoas.hateoastask.dto.CustomerRequestDto;
 import by.leverx.hateoas.hateoastask.dto.CustomerResponseDto;
 import by.leverx.hateoas.hateoastask.entity.Customer;
+import by.leverx.hateoas.hateoastask.exception.EntityNotFoundException;
 import by.leverx.hateoas.hateoastask.mapper.CustomerMapper;
 import by.leverx.hateoas.hateoastask.repository.CustomerRepository;
 import by.leverx.hateoas.hateoastask.service.CustomerService;
@@ -13,9 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * @author Valeryia Zubrytskaya
@@ -32,13 +29,14 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Optional<CustomerResponseDto> getCustomerById(Long id) {
 
+        if (!checkExistence(id)) {
+            throw new EntityNotFoundException(Customer.class.getName(), id);
+        }
+
         Optional<Customer> customer = customerRepository.findById(id);
-        customer.get().add(linkTo(methodOn(CustomerController.class)
-                .getCustomer(customer.get().getId()))
-                .withSelfRel());
 
         return customer
-                .map(customerMapper::toDto);    // TODO: 7/28/2021 exception
+                .map(customerMapper::toDto);
 
     }
 
@@ -48,9 +46,6 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerMapper.toEntity(customerRequestDto);
         customerRepository.save(customer);
 
-        customer.add(linkTo(methodOn(CustomerController.class)
-                .createCustomer(customerRequestDto))
-                .withRel("create"));
         return getCustomerById(customer.getId()).get();
 
     }
@@ -61,6 +56,34 @@ public class CustomerServiceImpl implements CustomerService {
         List<Customer> customers = customerRepository.findAll();
         return customerMapper.listToDtos(customers);
 
+    }
+
+    @Override
+    public void deleteCustomerById(Long id) {
+        if (checkExistence(id)) {
+            customerRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException(Customer.class.getName(), id);
+        }
+    }
+
+    @Override
+    public CustomerResponseDto updateCustomerById(Long id, CustomerRequestDto customerRequestDto) {
+        if (!checkExistence(id)) {
+            throw new EntityNotFoundException(Customer.class.getName(), id);
+        }
+
+        customerRequestDto.setId(id);
+        Customer customer = customerMapper.toEntity(customerRequestDto);
+
+        Customer savedCustomer = customerRepository.save(customer);
+
+        return customerMapper.toDto(savedCustomer);
+    }
+
+    @Override
+    public boolean checkExistence(Long id) {
+        return customerRepository.existsById(id);
     }
 
 }

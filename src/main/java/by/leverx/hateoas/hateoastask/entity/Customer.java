@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +29,7 @@ import static org.hibernate.validator.internal.util.CollectionHelper.newHashSet;
 @Table(name = "customer")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Customer extends RepresentationModel<Customer> {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -33,7 +33,6 @@ public class CustomerMapper {
         customerResponseDto.setLastName(customer.getLastName());
         customerResponseDto.setAddress(customer.getAddress());
         customerResponseDto.setOrders(customer.getOrders());
-        customerResponseDto.setLinks(customer.getLinks());
         return customerResponseDto;
     }
 

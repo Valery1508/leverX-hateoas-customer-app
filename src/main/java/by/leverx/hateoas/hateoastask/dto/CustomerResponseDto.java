@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.hateoas.Links;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -18,7 +17,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerResponseDto {
+public class CustomerResponseDto extends RepresentationModel<CustomerResponseDto> {
 
     protected Long id;
 
@@ -31,8 +30,6 @@ public class CustomerResponseDto {
     @NotBlank
     private String address;
 
-    @NotNull
     private Set<Order> orders;
 
-    private Links links;
 }
