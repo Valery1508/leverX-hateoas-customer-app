@@ -9,8 +9,8 @@ import by.leverx.hateoas.hateoastask.repository.CustomerRepository;
 import by.leverx.hateoas.hateoastask.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +19,6 @@ import java.util.Optional;
  */
 @Service
 @AllArgsConstructor
-@Transactional
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -27,6 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerMapper customerMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<CustomerResponseDto> getCustomerById(Long id) {
 
         if (!checkExistence(id)) {
@@ -41,6 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerResponseDto createCustomer(CustomerRequestDto customerRequestDto) {
 
         Customer customer = customerMapper.toEntity(customerRequestDto);
@@ -51,6 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerResponseDto> getCustomers() {
 
         List<Customer> customers = customerRepository.findAll();
@@ -59,6 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public void deleteCustomerById(Long id) {
         if (checkExistence(id)) {
             customerRepository.deleteById(id);
@@ -68,6 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerResponseDto updateCustomerById(Long id, CustomerRequestDto customerRequestDto) {
         if (!checkExistence(id)) {
             throw new EntityNotFoundException(Customer.class.getName(), id);
@@ -82,6 +86,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean checkExistence(Long id) {
         return customerRepository.existsById(id);
     }
